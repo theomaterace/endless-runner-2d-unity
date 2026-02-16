@@ -21,7 +21,8 @@ public class ScoreManager : MonoBehaviour
 
     private void Update()
     {
-        if (Time.timeScale <= 0f) return;
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+            return;
 
         score += pointsPerSecond * Time.deltaTime;
         int s = Mathf.FloorToInt(score);

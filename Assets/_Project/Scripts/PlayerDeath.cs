@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerDeath : MonoBehaviour
 {
@@ -7,10 +6,13 @@ public class PlayerDeath : MonoBehaviour
 
     private void Update()
     {
-        if (isDead && Input.GetKeyDown(KeyCode.R))
+        if (!isDead) return;
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.State == GameState.GameOver &&
+            Input.GetKeyDown(KeyCode.R))
         {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameManager.Instance.Restart();
         }
     }
 
@@ -22,7 +24,8 @@ public class PlayerDeath : MonoBehaviour
         {
             isDead = true;
             Debug.Log("Player died (hit obstacle). Press R to restart.");
-            Time.timeScale = 0f;
+            GameManager.Instance?.GameOver();
+
         }
     }
 }
