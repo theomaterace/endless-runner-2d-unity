@@ -312,7 +312,7 @@ Transform:
   m_GameObject: {fileID: 417972068}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2, z: 0}
+  m_LocalPosition: {x: -5, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -911,7 +911,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1066925719}
-  - component: {fileID: 1066925718}
   - component: {fileID: 1066925720}
   m_Layer: 0
   m_Name: Spawner
@@ -920,25 +919,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1066925718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1066925717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ae1ec7b443420a4baf63663fdc89907, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
-  obstaclePrefab: {fileID: 6349945097135739619, guid: 3280669f27c854b41a34cf7b47dedbee, type: 3}
-  parentWorld: {fileID: 743218913}
-  minInterval: 1
-  maxInterval: 2
-  spawnY: -2.5
-  minHeight: 1
-  maxHeight: 2
 --- !u!4 &1066925719
 Transform:
   m_ObjectHideFlags: 0
@@ -968,8 +948,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SegmentSpawner
   segmentsRoot: {fileID: 2072402469}
   spawnPoint: {fileID: 321228358}
-  segmentPrefab: {fileID: 7713104989852200390, guid: 76a1d6267b5b884448778ac2333ac808, type: 3}
+  segmentPrefabs:
+  - {fileID: 7713104989852200390, guid: d8df05488c0e756408613f73ef8c3d48, type: 3}
+  - {fileID: 7713104989852200390, guid: 2008ae03b6446c041a22aa88a1b98b37, type: 3}
+  - {fileID: 7713104989852200390, guid: 5db0f4dd41e1be04bbad2c322f008ba0, type: 3}
   initialSegments: 3
+  spawnLookahead: 2
+  maxSegmentsAlive: 6
 --- !u!1 &1440517982
 GameObject:
   m_ObjectHideFlags: 0

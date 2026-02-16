@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 557777635471238713}
   - component: {fileID: 4979582065595830411}
   - component: {fileID: 2204065644380478851}
-  - component: {fileID: 255945887956354306}
   m_Layer: 0
   m_Name: Obstacle_Test
   m_TagString: Obstacle
@@ -139,16 +138,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &255945887956354306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6349945097135739619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbf671bbed03f02479fea17cf4df2fc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DespawnOnX
-  despawnX: -15
