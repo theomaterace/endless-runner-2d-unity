@@ -1352,6 +1352,7 @@ GameObject:
   - component: {fileID: 1634288516}
   - component: {fileID: 1634288517}
   - component: {fileID: 1634288518}
+  - component: {fileID: 1634288519}
   m_Layer: 0
   m_Name: Graphics
   m_TagString: Untagged
@@ -1457,6 +1458,28 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+--- !u!95 &1634288519
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634288515}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 432f2ac2f591b7548ad54bef6b543e90, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2072402468
 GameObject:
   m_ObjectHideFlags: 0
