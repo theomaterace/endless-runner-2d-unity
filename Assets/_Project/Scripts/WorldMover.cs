@@ -8,6 +8,8 @@ public class WorldMover : MonoBehaviour
 
     private float currentSpeed;
 
+    public float CurrentSpeed => currentSpeed;
+
     private void Start()
     {
         currentSpeed = startSpeed;
