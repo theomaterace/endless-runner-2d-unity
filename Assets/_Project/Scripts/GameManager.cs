@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class GameManager : MonoBehaviour
     public GameState State { get; private set; } = GameState.MainMenu;
 
     public event Action<GameState> OnStateChanged;
+
+    [Header("UI (optional)")]
+    [SerializeField] private TMP_Text pressAnyKeyStartText;
+    [SerializeField] private TMP_Text pressAnyKeyRestartText;
 
     private void Awake()
     {
@@ -29,6 +34,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("[GameManager] Start -> initial State=" + State);
         ApplyState(State);
         OnStateChanged?.Invoke(State);
+        RefreshPromptUI();
         Debug.Log("[GameManager] Start -> timeScale=" + Time.timeScale);
     }
 
@@ -41,6 +47,7 @@ public class GameManager : MonoBehaviour
         State = newState;
         ApplyState(State);
         OnStateChanged?.Invoke(State);
+        RefreshPromptUI();
 
         Debug.Log("[GameManager] SetState done -> State=" + State + ", timeScale=" + Time.timeScale);
     }
@@ -66,6 +73,15 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("[GameManager] ApplyState -> " + state + ", timeScale=" + Time.timeScale);
+    }
+
+    private void RefreshPromptUI()
+    {
+        if (pressAnyKeyStartText != null)
+            pressAnyKeyStartText.gameObject.SetActive(State == GameState.MainMenu);
+
+        if (pressAnyKeyRestartText != null)
+            pressAnyKeyRestartText.gameObject.SetActive(State == GameState.GameOver);
     }
 
     // Public API (UI + other scripts)
@@ -96,15 +112,25 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         // VERY IMPORTANT: in Unity, keyboard input is captured only if the Game view is focused.
-        // Click the Game tab once, then press Space.
+        // Click the Game tab once, then press a key.
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // START: any key (instead of only Space)
+        if (State == GameState.MainMenu && Input.anyKeyDown)
         {
-            Debug.Log("[GameManager] Space pressed (current State=" + State + ", timeScale=" + Time.timeScale + ")");
-            if (State == GameState.MainMenu)
-                StartGame();
+            Debug.Log("[GameManager] Any key pressed -> StartGame (State=" + State + ")");
+            StartGame();
+            return;
         }
 
+        // RESTART: any key on GameOver (optional, keeps your R too)
+        if (State == GameState.GameOver && Input.anyKeyDown)
+        {
+            Debug.Log("[GameManager] Any key pressed -> Restart (State=" + State + ")");
+            Restart();
+            return;
+        }
+
+        // Pause toggle
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Debug.Log("[GameManager] Escape pressed (State=" + State + ")");
@@ -112,6 +138,7 @@ public class GameManager : MonoBehaviour
             else if (State == GameState.Paused) Resume();
         }
 
+        // Keep R as fallback (optional)
         if (Input.GetKeyDown(KeyCode.R))
         {
             Debug.Log("[GameManager] R pressed (State=" + State + ")");
