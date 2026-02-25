@@ -160,11 +160,22 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // GAME OVER: restart klawiatur¹ lub klikniêciem
+        // GAME OVER: restart klawiatur¹ lub klikniêciem POZA UI
         if (State == GameState.GameOver)
         {
-            if (AnyKeyboardKeyDown() || Input.GetMouseButtonDown(0))
+            // klawiatura -> restart
+            if (AnyKeyboardKeyDown())
             {
+                Restart();
+                return;
+            }
+
+            // mysz -> restart tylko jeœli nie klikamy UI (np. ResetButton)
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (PointerOverUI())
+                    return;
+
                 Restart();
                 return;
             }
