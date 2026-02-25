@@ -12,17 +12,29 @@ public class WorldMover : MonoBehaviour
 
     private void Start()
     {
+        ApplyDifficulty();
         currentSpeed = startSpeed;
     }
 
     private void Update()
     {
-        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+        if (GameManager.Instance != null &&
+            GameManager.Instance.State != GameState.Playing)
             return;
 
         currentSpeed += acceleration * Time.deltaTime;
         currentSpeed = Mathf.Min(currentSpeed, maxSpeed);
 
         transform.position += Vector3.left * currentSpeed * Time.deltaTime;
+    }
+
+    private void ApplyDifficulty()
+    {
+        var level = DifficultyStore.Get();
+        var settings = DifficultyStore.GetSettings(level);
+
+        startSpeed = settings.startSpeed;
+        acceleration = settings.acceleration;
+        maxSpeed = settings.maxSpeed;
     }
 }

@@ -13,6 +13,9 @@ public class ObstacleSpawner2D : MonoBehaviour
     [SerializeField] private float minInterval = 1.0f;
     [SerializeField] private float maxInterval = 2.0f;
 
+    [Header("Spawn randomness (0 = sta³y rytm, 1 = pe³na losowoœæ)")]
+    [SerializeField, Range(0f, 1f)] private float intervalRandomness = 0.75f;
+
     [Header("Spawn position")]
     [SerializeField] private float spawnAhead = 2.0f;
     [SerializeField] private float spawnY = -2.0f;
@@ -28,22 +31,43 @@ public class ObstacleSpawner2D : MonoBehaviour
 
     private void Start()
     {
-        nextInterval = Random.Range(minInterval, maxInterval);
+        ApplyDifficulty();
+        nextInterval = GetNextInterval();
     }
 
     private void Update()
     {
-
         if (parentWorld == null) return;
         if (obstaclePrefabs == null || obstaclePrefabs.Count == 0) return;
 
         timer += Time.deltaTime;
+
         if (timer >= nextInterval)
         {
             timer = 0f;
-            nextInterval = Random.Range(minInterval, maxInterval);
+            nextInterval = GetNextInterval();
             Spawn();
         }
+    }
+
+    private void ApplyDifficulty()
+    {
+        var level = DifficultyStore.Get();
+        var settings = DifficultyStore.GetSettings(level);
+
+        minInterval = settings.minInterval;
+        maxInterval = settings.maxInterval;
+        intervalRandomness = settings.intervalRandomness;
+    }
+
+    private float GetNextInterval()
+    {
+        float r = Random.value;
+
+        // im mniejsza losowoœæ, tym bli¿ej œrodka zakresu
+        r = Mathf.Lerp(0.5f, r, intervalRandomness);
+
+        return Mathf.Lerp(minInterval, maxInterval, r);
     }
 
     private void Spawn()
@@ -57,13 +81,14 @@ public class ObstacleSpawner2D : MonoBehaviour
         int index = Random.Range(0, obstaclePrefabs.Count);
         if (obstaclePrefabs.Count > 1 && index == lastIndex)
             index = (index + 1) % obstaclePrefabs.Count;
+
         lastIndex = index;
 
         GameObject obj = Instantiate(
             obstaclePrefabs[index],
             new Vector3(spawnX, spawnY, 0f),
             Quaternion.identity,
-            parentWorld 
+            parentWorld
         );
 
         if (randomizeHeight)
