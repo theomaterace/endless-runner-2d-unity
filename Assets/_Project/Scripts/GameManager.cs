@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
     public void NotifyDifficultyChosen()
     {
         difficultyChosen = true;
+        RefreshPromptUI();
     }
 
     public void SetState(GameState newState)
@@ -82,15 +83,22 @@ public class GameManager : MonoBehaviour
 
     private void RefreshPromptUI()
     {
+        bool canShowStartPrompt = (State == GameState.MainMenu) && (!requireDifficultyChoice || difficultyChosen);
+
         if (pressAnyKeyStartText != null)
-            pressAnyKeyStartText.gameObject.SetActive(State == GameState.MainMenu);
+            pressAnyKeyStartText.gameObject.SetActive(canShowStartPrompt);
 
         if (pressAnyKeyRestartText != null)
             pressAnyKeyRestartText.gameObject.SetActive(State == GameState.GameOver);
 
         if (difficultyButtons != null)
         {
-            if (State == GameState.MainMenu) difficultyButtons.Show();
+            bool shouldShowDifficulty =
+                (State == GameState.MainMenu) &&
+                requireDifficultyChoice &&
+                !difficultyChosen;
+
+            if (shouldShowDifficulty) difficultyButtons.Show();
             else difficultyButtons.Hide();
         }
     }
