@@ -14,6 +14,10 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private TMP_Text scoreText; // HUD w trakcie gry
     [SerializeField] private TMP_Text top5Text;  // tekst na GameOverPanel
 
+    [Header("GameOver-only UI")]
+    [Tooltip("Assign the Reset button GameObject (or its parent). It will be shown only on GameOver.")]
+    [SerializeField] private GameObject resetButtonObject;
+
     [Header("Scoring")]
     [SerializeField] private float pointsPerSecond = 10f;
 
@@ -21,7 +25,6 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private float blinkDuration = 3f;
     [SerializeField] private float blinkInterval = 0.25f;
 
-    // Kolor wpisu zrobimy tagami TMP:
     [SerializeField] private Color highlightColor = Color.yellow;
 
     private float score;
@@ -40,8 +43,13 @@ public class ScoreManager : MonoBehaviour
     private void Awake()
     {
         LoadLeaderboard();
+
+        // UI init
         RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
         UpdateScoreUI(0);
+
+        // Reset button only on GameOver
+        SetResetButtonVisible(false);
     }
 
     private void Start()
@@ -88,15 +96,28 @@ public class ScoreManager : MonoBehaviour
     {
         switch (state)
         {
+            case GameState.MainMenu:
+            case GameState.Paused:
+                // Nie pokazujemy resetu poza GameOver
+                SetResetButtonVisible(false);
+                break;
+
             case GameState.Playing:
+                SetResetButtonVisible(false);
+
                 score = 0f;
                 UpdateScoreUI(0);
+
+                // Opcjonalnie: niech top5 nie "wisi" w tle jeœli panel jest w³¹czony
+                // RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
                 break;
 
             case GameState.GameOver:
+                // Pokazujemy reset dopiero gdy lista Top5 ma sens
+                SetResetButtonVisible(true);
+
                 SaveRunToLeaderboard(Mathf.FloorToInt(score));
 
-                // Zawsze wyrenderuj tabelê bez podœwietlenia, a potem ewentualnie migaj
                 RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
 
                 if (blinkRoutine != null)
@@ -106,6 +127,12 @@ public class ScoreManager : MonoBehaviour
                     blinkRoutine = StartCoroutine(BlinkEntryRealtime(lastInsertedIndex));
                 break;
         }
+    }
+
+    private void SetResetButtonVisible(bool visible)
+    {
+        if (resetButtonObject != null)
+            resetButtonObject.SetActive(visible);
     }
 
     private void SaveRunToLeaderboard(int runScore)
@@ -118,8 +145,6 @@ public class ScoreManager : MonoBehaviour
             .Take(5)
             .ToList();
 
-        // Je¿eli wynik nie wszed³ do Top5, nie bêdzie go w topScores
-        // lastInsertedIndex ustawiamy na pierwsze wyst¹pienie (remisy -> najwy¿sze mo¿liwe miejsce)
         for (int i = 0; i < topScores.Count; i++)
         {
             if (topScores[i] == runScore)
@@ -197,7 +222,6 @@ public class ScoreManager : MonoBehaviour
 
     private IEnumerator BlinkEntryRealtime(int index)
     {
-        // Uwaga: timeScale=0 -> u¿ywamy realtime, ¿eby miga³o na GameOver
         float elapsed = 0f;
         bool on = false;
 
@@ -214,7 +238,7 @@ public class ScoreManager : MonoBehaviour
         blinkRoutine = null;
     }
 
-    // Opcjonalnie: przycisk w UI
+    // Podpinasz pod przycisk Reset
     public void ResetLeaderboard()
     {
         topScores.Clear();
@@ -230,5 +254,9 @@ public class ScoreManager : MonoBehaviour
         RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
         score = 0f;
         UpdateScoreUI(0);
+
+        // Nadal jesteœ na GameOver, wiêc reset mo¿e zostaæ widoczny.
+        // Jeœli wolisz go schowaæ po resecie:
+        // SetResetButtonVisible(false);
     }
 }
