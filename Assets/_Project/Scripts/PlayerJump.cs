@@ -11,7 +11,6 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.15f;
 
     private Rigidbody2D rb;
-
     private bool isGrounded;
     public bool IsGrounded => isGrounded;
 
@@ -28,6 +27,10 @@ public class PlayerJump : MonoBehaviour
             groundLayer
         );
 
+        // Nie skacz, jeœli gra nie jest w Playing
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+            return;
+
         if (isGrounded && (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
         {
             Jump();
@@ -38,6 +41,9 @@ public class PlayerJump : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlayJump();
     }
 
     private void OnDrawGizmosSelected()
