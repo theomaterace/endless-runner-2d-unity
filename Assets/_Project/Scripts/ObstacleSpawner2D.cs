@@ -40,6 +40,9 @@ public class ObstacleSpawner2D : MonoBehaviour
         if (parentWorld == null) return;
         if (obstaclePrefabs == null || obstaclePrefabs.Count == 0) return;
 
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+            return;
+
         timer += Time.deltaTime;
 
         if (timer >= nextInterval)

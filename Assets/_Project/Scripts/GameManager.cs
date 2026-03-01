@@ -21,8 +21,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool requireDifficultyChoice = true;
 
     [Header("Input")]
-    [Tooltip("Jump keys should NOT start the game, so the first Space doesn't get 'eaten' by Start.")]
-    [SerializeField] private bool preventJumpKeysFromStarting = true;
+    [Tooltip("If enabled, W/Up won't start the game. Space WILL start (so user can start with jump).")]
+    [SerializeField] private bool preventJumpKeysFromStarting = true; // CHANGED tooltip meaning
 
     private bool difficultyChosen;
 
@@ -132,10 +132,11 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private bool JumpKeyDown()
+    // CHANGED: rozdzielam Space od W/Up, ¿eby Space móg³ startowaæ
+    private bool DisallowedStartKeyDown()
     {
-        return Input.GetKeyDown(KeyCode.Space) ||
-               Input.GetKeyDown(KeyCode.W) ||
+        // Nie blokujemy Space
+        return Input.GetKeyDown(KeyCode.W) ||
                Input.GetKeyDown(KeyCode.UpArrow);
     }
 
@@ -147,12 +148,19 @@ public class GameManager : MonoBehaviour
             if (requireDifficultyChoice && !difficultyChosen)
                 return;
 
-            // Start z klawiatury
+            // 1) Space startuje (i mo¿esz to zrobiæ nawet zanim anyKeyDown "przepuœci" inne rzeczy)
+            if (Input.GetKeyDown(KeyCode.Space)) // CHANGED
+            {
+                StartGame();
+                return;
+            }
+
+            // 2) Start z klawiatury (dowolny klawisz)
             if (AnyKeyboardKeyDown())
             {
-                if (preventJumpKeysFromStarting && JumpKeyDown())
+                if (preventJumpKeysFromStarting && DisallowedStartKeyDown()) // CHANGED
                 {
-                    // Nie startujemy na Space/W/Up, ¿eby nie by³o wra¿enia "opóŸnienia skoku"
+                    // Nie startujemy na W/Up (opcjonalnie), ale Space ju¿ obs³u¿yliœmy wy¿ej
                     return;
                 }
 
@@ -160,7 +168,7 @@ public class GameManager : MonoBehaviour
                 return;
             }
 
-            // Start klikniêciem poza UI (opcjonalnie)
+            // 3) Start klikniêciem poza UI
             if (Input.GetMouseButtonDown(0) && !PointerOverUI())
             {
                 StartGame();

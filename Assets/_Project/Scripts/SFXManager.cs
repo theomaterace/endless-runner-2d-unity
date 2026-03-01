@@ -10,6 +10,7 @@ public class SFXManager : MonoBehaviour
     [SerializeField] private AudioClip hit;
 
     [Header("Audio")]
+    [SerializeField, Range(0f, 1f)] private float jumpVolume = 0.6f;
     [SerializeField] private AudioSource oneShotSource;
 
     private void Awake()
@@ -39,7 +40,8 @@ public class SFXManager : MonoBehaviour
 
     public void PlayJump()
     {
-        PlayOneShot(jump);
+        if (jump == null || oneShotSource == null) return;
+        oneShotSource.PlayOneShot(jump, jumpVolume);
     }
 
     public void PlayHit()
