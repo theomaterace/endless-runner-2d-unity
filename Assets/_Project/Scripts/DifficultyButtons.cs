@@ -23,8 +23,12 @@ public class DifficultyButtons : MonoBehaviour
     private void Chosen()
     {
         Hide();
+
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.NotifyDifficultyChosen();
+            GameManager.Instance.StartGame();
+        }
     }
 
     public void SetEasy()
