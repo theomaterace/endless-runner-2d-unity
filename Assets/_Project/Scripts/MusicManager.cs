@@ -16,14 +16,12 @@ public class MusicManager : MonoBehaviour
         if (keepAcrossSceneLoads)
             DontDestroyOnLoad(gameObject);
 
-        // Bezpiecznie: start od ciszy, a potem ustawimy wg stanu GameManagera.
         if (menuMusic != null) menuMusic.Stop();
         if (gameplayMusic != null) gameplayMusic.Stop();
     }
 
     private void Start()
     {
-        // Je¿eli GameManager ju¿ istnieje, zepnij siê od razu.
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnStateChanged += HandleStateChanged;
@@ -42,7 +40,6 @@ public class MusicManager : MonoBehaviour
         if (state == lastState) return;
         lastState = state;
 
-        // Menu: MainMenu + GameOver + Paused (jeœli chcesz)
         bool shouldPlayMenu =
             state == GameState.MainMenu ||
             state == GameState.GameOver ||
@@ -70,14 +67,8 @@ public class MusicManager : MonoBehaviour
             }
             else
             {
-                if (gameplayMusic.isPlaying) gameplayplayMusicStopSafe();
+                if (gameplayMusic.isPlaying) gameplayMusic.Stop();
             }
         }
-    }
-
-    private void gameplayplayMusicStopSafe()
-    {
-        if (gameplayMusic != null && gameplayMusic.isPlaying)
-            gameplayMusic.Stop();
     }
 }

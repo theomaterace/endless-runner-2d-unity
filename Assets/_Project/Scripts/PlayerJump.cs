@@ -111,7 +111,6 @@ public class PlayerJump : MonoBehaviour
             groundLayer
         );
 
-        // Nie skacz, je¿eli gra nie jest w Playing
         if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
             return;
 

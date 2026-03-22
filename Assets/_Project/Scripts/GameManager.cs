@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
-using UnityEngine.EventSystems;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,19 +20,8 @@ public class GameManager : MonoBehaviour
     [Header("Flow")]
     [SerializeField] private bool requireDifficultyChoice = true;
 
-    [Header("Input")]
-    [Tooltip("Jump keys should NOT start the game, so the first Space doesn't get 'eaten' by Start.")]
-
     private bool difficultyChosen;
-
-    // Input System actions
-    private InputAction pointerPressAction;
-    private InputAction pointerPositionAction;
-    private InputAction anyKeyAction;
-    private InputAction jumpKeyAction;
     private InputAction escapeAction;
-
-    private readonly List<RaycastResult> uiRaycastResults = new();
 
     private void Awake()
     {
@@ -44,62 +30,28 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        Instance = this;
 
+        Instance = this;
         CreateInputActions();
     }
 
     private void OnEnable()
     {
-        pointerPressAction?.Enable();
-        pointerPositionAction?.Enable();
-        anyKeyAction?.Enable();
-        jumpKeyAction?.Enable();
         escapeAction?.Enable();
     }
 
     private void OnDisable()
     {
-        pointerPressAction?.Disable();
-        pointerPositionAction?.Disable();
-        anyKeyAction?.Disable();
-        jumpKeyAction?.Disable();
         escapeAction?.Disable();
     }
 
     private void OnDestroy()
     {
-        pointerPressAction?.Dispose();
-        pointerPositionAction?.Dispose();
-        anyKeyAction?.Dispose();
-        jumpKeyAction?.Dispose();
         escapeAction?.Dispose();
     }
 
     private void CreateInputActions()
     {
-        pointerPressAction = new InputAction(
-            name: "PointerPress",
-            type: InputActionType.Button,
-            binding: "<Pointer>/press");
-
-        pointerPositionAction = new InputAction(
-            name: "PointerPosition",
-            type: InputActionType.Value,
-            binding: "<Pointer>/position");
-
-        anyKeyAction = new InputAction(
-            name: "AnyKey",
-            type: InputActionType.Button,
-            binding: "<Keyboard>/anyKey");
-
-        jumpKeyAction = new InputAction(
-            name: "JumpKey",
-            type: InputActionType.Button);
-        jumpKeyAction.AddBinding("<Keyboard>/space");
-        jumpKeyAction.AddBinding("<Keyboard>/w");
-        jumpKeyAction.AddBinding("<Keyboard>/upArrow");
-
         escapeAction = new InputAction(
             name: "Escape",
             type: InputActionType.Button,
@@ -153,7 +105,7 @@ public class GameManager : MonoBehaviour
 
     private void RefreshPromptUI()
     {
-        bool canShowStartPrompt = (State == GameState.MainMenu) && (!requireDifficultyChoice || difficultyChosen);
+        bool canShowStartPrompt = State == GameState.MainMenu && (!requireDifficultyChoice || difficultyChosen);
 
         if (pressAnyKeyStartText != null)
             pressAnyKeyStartText.gameObject.SetActive(canShowStartPrompt);
@@ -164,7 +116,7 @@ public class GameManager : MonoBehaviour
         if (difficultyButtons != null)
         {
             bool shouldShowDifficulty =
-                (State == GameState.MainMenu) &&
+                State == GameState.MainMenu &&
                 requireDifficultyChoice &&
                 !difficultyChosen;
 
@@ -185,71 +137,14 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private bool PointerPressedThisFrame(out Vector2 screenPosition)
-    {
-        if (pointerPressAction != null && pointerPressAction.WasPressedThisFrame())
-        {
-            screenPosition = pointerPositionAction != null
-                ? pointerPositionAction.ReadValue<Vector2>()
-                : default;
-            return true;
-        }
-
-        screenPosition = default;
-        return false;
-    }
-
-    private bool PointerOverBlockingUI(Vector2 screenPosition)
-    {
-        if (EventSystem.current == null)
-            return false;
-
-        var eventData = new PointerEventData(EventSystem.current)
-        {
-            position = screenPosition
-        };
-
-        uiRaycastResults.Clear();
-        EventSystem.current.RaycastAll(eventData, uiRaycastResults);
-
-        foreach (var result in uiRaycastResults)
-        {
-            var go = result.gameObject;
-            if (go == null || !go.activeInHierarchy)
-                continue;
-
-            var clickHandler = ExecuteEvents.GetEventHandler<IPointerClickHandler>(go);
-            if (clickHandler != null)
-                return true;
-
-            var selectable = go.GetComponentInParent<Selectable>();
-            if (selectable != null && selectable.IsInteractable())
-                return true;
-        }
-
-        return false;
-    }
-
-    private bool AnyKeyboardKeyDown()
-    {
-        return anyKeyAction != null && anyKeyAction.WasPressedThisFrame();
-    }
-
-    private bool JumpKeyDown()
-    {
-        return jumpKeyAction != null && jumpKeyAction.WasPressedThisFrame();
-    }
-
     private void Update()
     {
-        // Pause
         if (escapeAction != null && escapeAction.WasPressedThisFrame())
         {
             if (State == GameState.Playing) Pause();
             else if (State == GameState.Paused) Resume();
         }
 
-        // Safety
         if (State == GameState.Playing && Time.timeScale < 0.99f)
             Time.timeScale = 1f;
     }

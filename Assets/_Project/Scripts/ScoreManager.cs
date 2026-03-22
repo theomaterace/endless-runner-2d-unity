@@ -11,8 +11,8 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private string leaderboardKey = "LeaderboardTop5";
 
     [Header("UI")]
-    [SerializeField] private TMP_Text scoreText; // HUD w trakcie gry
-    [SerializeField] private TMP_Text top5Text;  // tekst na GameOverPanel
+    [SerializeField] private TMP_Text scoreText; 
+    [SerializeField] private TMP_Text top5Text;  
 
     [Header("GameOver-only UI")]
     [Tooltip("Assign the Reset button GameObject (or its parent). It will be shown only on GameOver.")]
@@ -44,11 +44,9 @@ public class ScoreManager : MonoBehaviour
     {
         LoadLeaderboard();
 
-        // UI init
         RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
         UpdateScoreUI(0);
 
-        // Reset button only on GameOver
         SetResetButtonVisible(false);
     }
 
@@ -98,7 +96,6 @@ public class ScoreManager : MonoBehaviour
         {
             case GameState.MainMenu:
             case GameState.Paused:
-                // Nie pokazujemy resetu poza GameOver
                 SetResetButtonVisible(false);
                 break;
 
@@ -108,12 +105,9 @@ public class ScoreManager : MonoBehaviour
                 score = 0f;
                 UpdateScoreUI(0);
 
-                // Opcjonalnie: niech top5 nie "wisi" w tle jeœli panel jest w³¹czony
-                // RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
                 break;
 
             case GameState.GameOver:
-                // Pokazujemy reset dopiero gdy lista Top5 ma sens
                 SetResetButtonVisible(true);
 
                 SaveRunToLeaderboard(Mathf.FloorToInt(score));
@@ -209,7 +203,7 @@ public class ScoreManager : MonoBehaviour
         {
             string line;
             if (i < topScores.Count) line = $"{i + 1}) {topScores[i]}";
-            else line = $"{i + 1}) —";
+            else line = $"{i + 1}) — ";
 
             if (i == highlightIndex && highlightOn)
                 line = $"<color=#{colorHex}>{line}</color>";
@@ -237,8 +231,6 @@ public class ScoreManager : MonoBehaviour
         RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
         blinkRoutine = null;
     }
-
-    // Podpinasz pod przycisk Reset
     public void ResetLeaderboard()
     {
         topScores.Clear();
@@ -254,9 +246,5 @@ public class ScoreManager : MonoBehaviour
         RenderLeaderboardUI(highlightIndex: -1, highlightOn: false);
         score = 0f;
         UpdateScoreUI(0);
-
-        // Nadal jesteœ na GameOver, wiêc reset mo¿e zostaæ widoczny.
-        // Jeœli wolisz go schowaæ po resecie:
-        // SetResetButtonVisible(false);
     }
 }
